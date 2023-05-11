@@ -15,7 +15,7 @@ import os
 # THE PLOTS WILL BE SAVED IN A SUBFOLDER NAMED 'plots' IN THE SAME FOLDER AS THIS FILE
 
 # READ DATA
-data = pd.read_csv('csv/data.csv')
+data = pd.read_csv('data.csv')
 wavelengths = data['Wavelength']
 frequencies = 299792458 / wavelengths
 data = data.filter(like='Voltage')
@@ -79,12 +79,8 @@ ax.set_xlabel('Slope (x10^-34))')
 ax.set_ylabel('Intercept (x10^-28)')
 ax.set_zlabel('S-Statistic')
 
-# create plots folder if it doesn't exist
-if not os.path.exists('plots'):
-    os.makedirs('plots')
-
 # save the figure as a high quality png
-plt.savefig('plots/KE_vs_Freq.png', dpi=300, bbox_inches='tight')
+plt.savefig('KE_vs_Freq.png', dpi=300, bbox_inches='tight')
 plt.show()
 
 
