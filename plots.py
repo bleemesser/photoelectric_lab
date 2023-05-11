@@ -5,11 +5,14 @@ import numpy as np
 import pandas as pd
 import scipy.stats as stats
 from scipy.optimize import minimize
+import os
 
 # SPREADSHEET REQUIREMENTS:
 # - Must be a csv file
 # - Must have a column named 'Wavelength' with the wavelength of the light in nm
 # - Must have columns named 'Voltage 1', 'Voltage 2', etc. with the voltages in volts. The number of columns does not matter, but there must be at least one. The values should be negative.
+# PLACE THE CSV FILE IN A SUBFOLDER NAMED 'csv' IN THE SAME FOLDER AS THIS FILE
+# THE PLOTS WILL BE SAVED IN A SUBFOLDER NAMED 'plots' IN THE SAME FOLDER AS THIS FILE
 
 # READ DATA
 data = pd.read_csv('csv/data.csv')
@@ -75,6 +78,10 @@ ax.set_title('S-Statistic vs Slope and Intercept')
 ax.set_xlabel('Slope (x10^-34))')
 ax.set_ylabel('Intercept (x10^-28)')
 ax.set_zlabel('S-Statistic')
+
+# create plots folder if it doesn't exist
+if not os.path.exists('plots'):
+    os.makedirs('plots')
 
 # save the figure as a high quality png
 plt.savefig('plots/KE_vs_Freq.png', dpi=300, bbox_inches='tight')
