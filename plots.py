@@ -49,8 +49,8 @@ min_s = res.fun # the minimum value of the s-statistic
 plt.figure(figsize=(16, 8))
 plt.subplot(1, 2, 1)
 plt.errorbar(df['Frequency']/1000, df['KE'], yerr=df['Stdev'], fmt='o', markersize=3.5, label='Data', capsize=4, elinewidth=1.5)
-plt.plot(df['Frequency']/1000, slope * df['Frequency'] + intercept, label=f'Linear Regression: y={slope:.2e}x+{intercept:.2e}') # thus far seems basically identical to the s-statistic
-plt.plot(df['Frequency']/1000, slope_s * df['Frequency'] + intercept_s, label=f'S-Statistic: y={slope_s:.2e}x+{intercept_s:.2e}, s={min_s:.2e}')
+plt.plot(df['Frequency']/1000, slope * df['Frequency'] + intercept, label=f'Linear Regression: y={slope:.2e}x+{intercept:.2e}', c='gray') # thus far seems basically identical to the s-statistic
+plt.plot(df['Frequency']/1000, slope_s * df['Frequency'] + intercept_s, label=f'S-Statistic: y={slope_s:.2e}x+{intercept_s:.2e}, s={min_s:.2e}', c='darkblue')
 plt.xlabel('Frequency (kHz)')
 plt.ylabel('Kinetic Energy (J)')
 plt.title('Kinetic Energy vs Frequency')
@@ -65,8 +65,8 @@ for i in range(100):
         y[i][j] = s_statistic([x[i][j], z[i][j]])
 # create a new colormap that is the same as the default one, but with the first color removed
 viridis = matplotlib.colormaps['viridis']
-newcolors = viridis(np.linspace(0, 1, 256))
-newcolors = newcolors[1:, :]
+newcolors = viridis(np.linspace(0.2, 1, 256))
+newcolors = newcolors[2:, :]
 newcmp = ListedColormap(newcolors)
 # plot the surface
 ax.plot_surface(x, z, y, cmap=newcmp, alpha=0.75)

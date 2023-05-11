@@ -10,5 +10,7 @@ My graphing and calculations for the lab.
 - Place your data.csv in the same folder as `plots.py`.
 - With python installed, run in the terminal, in the same directory as you cloned this repository to, `python3 -m pip install -r requirements.txt` to get the needed packages.
 - Run `python3 plots.py`
+### Interpreting Results:
+- The coefficient of y for both the linear regression and s-statistic models is the found value of Planck's constant. The added value is the negative work function.
 ## Sample:
 ![example](example.png)

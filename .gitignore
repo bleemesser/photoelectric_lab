@@ -1,3 +1,5 @@
 *.png
 *.csv
+!example.csv
+!example.png
 .DS_Store
