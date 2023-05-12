@@ -25,7 +25,7 @@ data = data * -1.602176634e-19 *10**-9
 data.columns = data.columns.str.replace('Voltage', 'KE')
 # get average KE across all trials
 average_voltages = data.filter(like='KE').mean(axis=1)
-# get standard deviation of voltage
+# get standard deviation of KE across all trials
 std = data.filter(like='KE').std(axis=1)
 # create new dataframe with frequency, average KE, and standard deviation
 df = pd.DataFrame({'Frequency': frequencies, 'KE': average_voltages, 'Stdev': std})
@@ -75,12 +75,12 @@ ax.scatter(slope_s, intercept_s, min_s, c='black', s=10, label=f'Minimum: y={slo
 ax.legend()
 # add labels
 ax.set_title('S-Statistic vs Slope and Intercept')
-ax.set_xlabel('Slope (times 10^34))')
-ax.set_ylabel('Intercept (times 10^28)')
+ax.set_xlabel('Slope (10^34))')
+ax.set_ylabel('Intercept (10^28)')
 ax.set_zlabel('S-Statistic')
 
 # save the figure as a high quality png
-plt.savefig('KE_vs_Freq.png', dpi=300, bbox_inches='tight')
+plt.savefig('KE_vs_Freq.png', dpi=300)
 plt.show()
 
 
