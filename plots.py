@@ -75,8 +75,8 @@ ax.scatter(slope_s, intercept_s, min_s, c='black', s=10, label=f'Minimum: y={slo
 ax.legend()
 # add labels
 ax.set_title('S-Statistic vs Slope and Intercept')
-ax.set_xlabel('Slope (x10^-34))')
-ax.set_ylabel('Intercept (x10^-28)')
+ax.set_xlabel('Slope (times 10^34))')
+ax.set_ylabel('Intercept (times 10^28)')
 ax.set_zlabel('S-Statistic')
 
 # save the figure as a high quality png
