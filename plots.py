@@ -16,7 +16,7 @@ def s_statistic(x, average_kes, frequencies, stdevs, offset=0):
 
 
 def find_zero_in_direction(
-    x, direction, average_kes, frequencies, stdevs, target_value=0
+    x, direction, average_kes, frequencies, stdevs, target_value=0, max_iters=20000
 ):
     # we'll offset the s-statistic by the target value so that we can find the closest zero to the target value in the given direction
     # we'll use gradient descent to find the closest zero in the given direction
@@ -27,18 +27,21 @@ def find_zero_in_direction(
     step_size_x = 1e-34
     step_size_y = 1e-19
     iters = 0
-    max_iters = 20000
     # iterate until we find a point where the s-statistic is within 1e-12 of the target value
+    s = s_statistic(p, average_kes, frequencies, stdevs, target_value)
+
     while (
-        abs(s_statistic(p, average_kes, frequencies, stdevs, target_value)) > 1e-12
+        abs(s) > 1e-12
         and iters < max_iters
     ):
         # print("Step size:", step_size, "Point:", p, "S-Statistic:", s_statistic(p, average_kes, frequencies, stdevs, target_value))
         # take a step in the given direction
         p[0] += step_size_x * direction[0]
         p[1] += step_size_y * direction[1]
+        s = s_statistic(p, average_kes, frequencies, stdevs, target_value)
         # if we've gone too far, take a step in the opposite direction and reduce the step size
-        if s_statistic(p, average_kes, frequencies, stdevs, target_value) > 0:
+        # print(f"S={s}, target={1e-12}, step_size_x={step_size_x}, step_size_y={step_size_y}, p={p}")
+        if s > 0:
             p[0] -= step_size_x * direction[0]
             p[1] -= step_size_y * direction[1]
             step_size_x /= 2
@@ -49,8 +52,9 @@ def find_zero_in_direction(
             step_size_y *= 1.1
         iters += 1
     if iters == max_iters:
-        return [None, None]
-    return p
+        return p, False
+    #     return [None, None]
+    return p, True
 
 
 def main():
@@ -129,15 +133,17 @@ def main():
     # to do this, we'll use the bisection method to find the zeroes of the s-statistic minus s_min - 1
     print("\nFinding 0.68 confidence interval...")
     # we need to rotate around the minimum point in steps of 2pi/num_points
-    NUM_POINTS = 500
+    NUM_POINTS = 2000
+    MAX_ITERS = 1000
     points = []
+    failed_points = []
     USE_CACHE = True
     if not os.path.exists("cache"):
         os.mkdir("cache")
-    if os.path.exists(f"cache/{datahash}.pkl") and USE_CACHE == True:
+    if os.path.exists(f"cache/{datahash}{NUM_POINTS}{MAX_ITERS}.pkl") and USE_CACHE == True:
         print("Cached points found matching data values, skipping calculation")
-        with open(f"cache/{datahash}.pkl", "rb") as f:
-            points = pickle.load(f)
+        with open(f"cache/{datahash}{NUM_POINTS}{MAX_ITERS}.pkl", "rb") as f:
+            [points, failed_points] = pickle.load(f)
     else:
         print("No cached points found matching data values, calculating...")
         # create progress bar
@@ -155,21 +161,26 @@ def main():
                 direction[0] = 0
             if abs(direction[1]) < 1e-10:
                 direction[1] = 0
-            p = find_zero_in_direction(
+            p, success = find_zero_in_direction(
                 [slope_s, intercept_s],
                 direction,
                 average_kes,
                 frequencies,
                 std,
                 min_s + 1,
+                MAX_ITERS,
             )
             pbar.update(1)
-            if p[0] is not None:
+            if success:
                 points.append(p)
+            else:
+                failed_points.append(p)
+                # print("\nNumber:", i, "Point found:", p)
 
         # convert points to numpy array
         points = np.array(points)
-        pickle.dump(points, open(f"cache/{datahash}.pkl", "wb"))
+        failed_points = np.array(failed_points)
+        pickle.dump([points, failed_points], open(f"cache/{datahash}{NUM_POINTS}{MAX_ITERS}.pkl", "wb"))
         print("Saved points to cache")
 
     # find the largest distance between the minimum point and the points on the 0.68 confidence interval
@@ -214,8 +225,8 @@ def main():
     ax = plt.subplot(1, 2, 2, projection="3d")
     # create a meshgrid of planck's constant and work function values
     # x is planck's constant, z is work function
-    xdelta = 0.005 * slope_s
-    ydelta = 0.005 * intercept_s
+    xdelta = 0.006 * slope_s
+    ydelta = 0.006 * intercept_s
     x = np.linspace(slope_s - xdelta, slope_s + xdelta, 100)
     z = np.linspace(intercept_s - ydelta, intercept_s + ydelta, 100)
     x, z = np.meshgrid(x, z)
@@ -236,6 +247,8 @@ def main():
         label="0.68 Confidence Interval",
         s=1,
     )
+    print(failed_points)
+    ax.scatter(failed_points[:, 0], failed_points[:, 1], [s_statistic(p, average_kes, frequencies, std) for p in failed_points], c="grey", s=1)
     ax.set_xlabel("Slope (Planck's constant) (m^2 kg / s) unit: 10^-34")
     ax.set_ylabel("Intercept (Work Function) (J) unit: 10^-19")
     ax.set_zlabel("S-Statistic")
