@@ -247,7 +247,7 @@ def main():
         label="0.68 Confidence Interval",
         s=1,
     )
-    print(failed_points)
+    # print(failed_points)
     ax.scatter(failed_points[:, 0], failed_points[:, 1], [s_statistic(p, average_kes, frequencies, std) for p in failed_points], c="grey", s=1)
     ax.set_xlabel("Slope (Planck's constant) (m^2 kg / s) unit: 10^-34")
     ax.set_ylabel("Intercept (Work Function) (J) unit: 10^-19")
