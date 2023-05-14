@@ -3,3 +3,4 @@
 !example.csv
 !example.png
 .DS_Store
+*.pkl
