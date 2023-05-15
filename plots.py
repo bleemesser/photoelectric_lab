@@ -185,10 +185,14 @@ def main():
 
     # find the largest distance between the minimum point and the points on the 0.68 confidence interval
     max_dist = 0
+    max_xdist = 0
+    max_ydist = 0
     for point in points:
         dist = np.sqrt((point[0] - slope_s) ** 2 + (point[1] - intercept_s) ** 2)
         if dist > max_dist:
             max_dist = dist
+            max_xdist = abs(point[0] - slope_s)
+            max_ydist = abs(point[1] - intercept_s)
     print("\nMax distance from minimum point:", max_dist)
 
     # PLOT DATA
@@ -225,15 +229,23 @@ def main():
     ax = plt.subplot(1, 2, 2, projection="3d")
     # create a meshgrid of planck's constant and work function values
     # x is planck's constant, z is work function
-    xdelta = 0.006 * slope_s
-    ydelta = 0.006 * intercept_s
+    # xdelta = 0.006 * slope_s
+    # ydelta = 0.006 * intercept_s
+    # use max_xdist and max_ydist to set the range of the graph
+    xdelta = max_xdist * 1.1
+    ydelta = max_ydist * 1.1
     x = np.linspace(slope_s - xdelta, slope_s + xdelta, 100)
     z = np.linspace(intercept_s - ydelta, intercept_s + ydelta, 100)
     x, z = np.meshgrid(x, z)
     y = np.zeros((100, 100))
     for i in range(100):
         for j in range(100):
-            y[i][j] = s_statistic([x[i][j], z[i][j]], average_kes, frequencies, std)
+            s = s_statistic([x[i][j], z[i][j]], average_kes, frequencies, std)
+            # if s > min_s + 1:
+            #     y[i][j] = s
+            # else:
+            #     y[i][j] = np.nan
+            y[i][j] = s
     # plot the surface
     ax.plot_surface(x, z, y, cmap="winter", alpha=0.35)
     # plot the minimum point
@@ -248,7 +260,7 @@ def main():
         s=1,
     )
     # print(failed_points)
-    ax.scatter(failed_points[:, 0], failed_points[:, 1], [s_statistic(p, average_kes, frequencies, std) for p in failed_points], c="grey", s=1)
+    # ax.scatter(failed_points[:, 0], failed_points[:, 1], [s_statistic(p, average_kes, frequencies, std) for p in failed_points], c="grey", s=1)
     ax.set_xlabel("Slope (Planck's constant) (m^2 kg / s) unit: 10^-34")
     ax.set_ylabel("Intercept (Work Function) (J) unit: 10^-19")
     ax.set_zlabel("S-Statistic")

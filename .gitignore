@@ -4,3 +4,7 @@
 !example.png
 .DS_Store
 *.pkl
+txt/
+# all .py except for plots.py
+*.py
+!plots.py
