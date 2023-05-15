@@ -99,15 +99,15 @@ def main():
         df["Frequency"], df["KE"]
     )
     print(
-        "\nLinear Regression: y=",
+        "\nLinear Regression: y =",
         slope,
-        "x+",
+        "x +",
         intercept,
-        ", r=",
+        ", r =",
         r_value,
-        ", p=",
+        ", p =",
         p_value,
-        ", std_err=",
+        ", std_err =",
         std_err,
     )
 
@@ -126,7 +126,7 @@ def main():
     slope_s = res.x[0]  # our found value for planck's constant
     intercept_s = res.x[1]  # our found value for the work function
     min_s = res.fun  # the minimum value of the s-statistic
-    print("\nS-Statistic: y=", slope_s, "x+", intercept_s, ", s=", min_s)
+    print("\nS-Statistic: y =", slope_s, "x +", intercept_s, ", s =", min_s)
 
     # find the error in the slope and intercept by finding the points where the s-statistic is 1 above the minimum
     # this will be the 0.68 confidence interval
@@ -185,15 +185,15 @@ def main():
 
     # find the largest distance between the minimum point and the points on the 0.68 confidence interval
     max_dist = 0
-    max_xdist = 0
-    max_ydist = 0
+    max_xdist = 0 # error in planck's constant
+    max_ydist = 0 # error in work function
     for point in points:
         dist = np.sqrt((point[0] - slope_s) ** 2 + (point[1] - intercept_s) ** 2)
         if dist > max_dist:
             max_dist = dist
             max_xdist = abs(point[0] - slope_s)
             max_ydist = abs(point[1] - intercept_s)
-    print("\nMax distance from minimum point:", max_dist)
+    print(f"\nError in planck's constant: ±{max_xdist}\nError in work function: ±{max_ydist}")
 
     # PLOT DATA
     # plot 2d graph of frequency vs average KE
@@ -204,21 +204,24 @@ def main():
         average_kes,
         yerr=std,
         fmt="o",
-        markersize=2,
-        capsize=2,
+        markersize=3,
+        capsize=2.5,
         label="Data",
+        ecolor="red",
     )
     plt.plot(
         frequencies,
         slope * frequencies + intercept,
-        label=f"Linear Regression: y={slope:.2e}x+{intercept:.2e}",
+        label=f"Linear Regression: y = {slope:.2e}x + {intercept:.2e}",
         color="grey",
+        alpha=0.45,
     )
     plt.plot(
         frequencies,
         slope_s * frequencies + intercept_s,
-        label=f"S-Statistic: y={slope_s:.2e}x+{intercept_s:.2e}",
+        label=f"S-Statistic: y = ({slope_s:.2e}±{max_xdist:.2e})x + ({intercept_s:.2e}±{max_ydist:.2e})",
         color="darkblue",
+        alpha=0.45,
     )
     plt.xlabel("Frequency (Hz)")
     plt.ylabel("Average Kinetic Energy (J)")
