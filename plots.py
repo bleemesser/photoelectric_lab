@@ -227,9 +227,12 @@ def main():
     plt.ylabel("Average Kinetic Energy (J)")
     plt.title("Frequency vs Average Kinetic Energy")
     plt.legend()
+    plt.grid()
 
     # plot 3d graph of s-statistic vs planck's constant vs work function
     ax = plt.subplot(1, 2, 2, projection="3d")
+    # ax not subplot
+    # ax = plt.ax
     # create a meshgrid of planck's constant and work function values
     # x is planck's constant, z is work function
     # xdelta = 0.006 * slope_s
@@ -252,7 +255,7 @@ def main():
     # plot the surface
     ax.plot_surface(x, z, y, cmap="winter", alpha=0.35)
     # plot the minimum point
-    ax.scatter(slope_s, intercept_s, min_s, c="black", label="Minimum Point", s=10)
+    ax.scatter(slope_s, intercept_s, min_s, c="black", label=f"Minimum Point S = {min_s:.2f}, expected = {len(average_kes) - 2}", s=10)
     # plot the 0.68 confidence interval
     ax.scatter(
         points[:, 0],
@@ -262,6 +265,11 @@ def main():
         label="0.68 Confidence Interval",
         s=1,
     )
+    # plot a flat plane that represents the expected value of the s-statistic: the number of data points minus the number of parameters. the color
+    # should be more reddish
+    ax.plot_surface(x, z, np.zeros((100, 100)) + len(average_kes) - 2, cmap="autumn", alpha=0.35)
+    # add to legend
+    
     # print(failed_points)
     # ax.scatter(failed_points[:, 0], failed_points[:, 1], [s_statistic(p, average_kes, frequencies, std) for p in failed_points], c="grey", s=1)
     ax.set_xlabel("Slope (Planck's constant) (m^2 kg / s) unit: 10^-34")
